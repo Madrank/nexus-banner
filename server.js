@@ -52,8 +52,18 @@ function drawBold(ctx, text, x, y, weightBoost = 1.6) {
   void weightBoost;
 }
 
-async function renderBanner(username) {
-  const [bg, logo] = await Promise.all([bgPromise, logoPromise]);
+async function loadAvatar(url) {
+  if (!url || !/^https?:\/\//i.test(url)) return null;
+  try {
+    const img = await loadImage(url);
+    return img.width > 0 && img.height > 0 ? img : null;
+  } catch {
+    return null;
+  }
+}
+
+async function renderBanner(username, avatarUrl) {
+  const [bg, logo, avatar] = await Promise.all([bgPromise, logoPromise, loadAvatar(avatarUrl)]);
   const canvas = createCanvas(W, H);
   const ctx = canvas.getContext('2d');
 
@@ -93,7 +103,7 @@ async function renderBanner(username) {
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
   ctx.closePath();
   ctx.clip();
-  drawCover(ctx, logo, cx - r, cy - r, r * 2, r * 2);
+  drawCover(ctx, avatar || logo, cx - r, cy - r, r * 2, r * 2);
   ctx.restore();
 
   ctx.lineWidth = 4;
@@ -177,7 +187,7 @@ async function renderBanner(username) {
 }
 
 app.get('/', (req, res) => {
-  res.json({ service: 'Neuro Nexus Banner', usage: '/banner?user=NomDuMembre' });
+  res.json({ service: 'Neuro Nexus Banner', usage: '/banner?user=NomDuMembre&avatar=URL_AVATAR (avatar optionnel)' });
 });
 
 app.get('/health', (req, res) => res.json({ ok: true }));
@@ -188,8 +198,9 @@ app.get('/banner', async (req, res) => {
     return res.status(400).json({ error: 'Paramètre "user" manquant : /banner?user=Nom' });
   }
   if (user.length > 32) user = user.slice(0, 32) + '…';
+  const avatar = String(req.query.avatar || '').trim();
   try {
-    const png = await renderBanner(user);
+    const png = await renderBanner(user, avatar);
     res.set('Content-Type', 'image/png');
     res.set('Cache-Control', 'public, max-age=86400');
     res.send(png);
