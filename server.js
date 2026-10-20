@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 const SIZE = 512;
 
-const logoPromise = loadImage(path.join(__dirname, 'assets/images/nexus_rune_logo_1792409017867.jpg'));
+const logoPromise = loadImage(path.join(__dirname, 'assets/images/nexus_logo.webp'));
 const deckPromise = loadImage(path.join(__dirname, 'assets/images/nexus_pirate_deck_1792409018130.jpg'));
 
 async function loadAvatar(url) {
