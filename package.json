@@ -1,0 +1,14 @@
+{
+  "name": "nexus-banner-service",
+  "version": "1.0.0",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^0.1.65",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2"
+  }
+}
